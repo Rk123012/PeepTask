@@ -52,6 +52,7 @@ public class SnapShotActivity extends AppCompatActivity {
         textSnap.setText(String.valueOf(markersId));
 
         //new project to gitlab
+        //gitlab
 
         key=MainActivity.loginKeyExport;
 

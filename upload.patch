@@ -1,0 +1,16 @@
+Index: app/src/main/java/com/example/mohsiul/peep/SnapShotActivity.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/example/mohsiul/peep/SnapShotActivity.java	(date 1536377767000)
++++ app/src/main/java/com/example/mohsiul/peep/SnapShotActivity.java	(date 1536377901000)
+@@ -51,7 +51,7 @@
+         ArrayList<String> markersId = intent.getStringArrayListExtra("markersId");
+         textSnap.setText(String.valueOf(markersId));
+ 
+-
++        //new project to gitlab
+ 
+         key=MainActivity.loginKeyExport;
+ 
