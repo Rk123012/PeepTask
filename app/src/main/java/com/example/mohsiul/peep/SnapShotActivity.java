@@ -51,7 +51,7 @@ public class SnapShotActivity extends AppCompatActivity {
         ArrayList<String> markersId = intent.getStringArrayListExtra("markersId");
         textSnap.setText(String.valueOf(markersId));
 
-
+        //new project to gitlab
 
         key=MainActivity.loginKeyExport;
 
