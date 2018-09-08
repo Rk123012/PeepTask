@@ -1,0 +1,21 @@
+query QueryLoginNew(
+  $email: String!,
+  $password: String!
+)
+{
+  login(
+    email: $email
+    password: $password
+
+    )
+
+    {  lastName
+      firstName
+      loginKey
+      email
+
+    }
+}
+
+
+

@@ -1,0 +1,33 @@
+
+query QueryImage(
+  $userIds:Int!,
+  $toekn:String!,
+  $cameraIdss:[Int]!
+
+)
+{
+  getScreenCaptures(
+    userId:$userIds
+    token:$toekn
+    cameraIds:$cameraIdss
+    )
+
+    {
+     screenshots{
+     url
+     cameraId
+      }
+
+    }
+}
+
+
+
+
+
+
+
+
+
+
+

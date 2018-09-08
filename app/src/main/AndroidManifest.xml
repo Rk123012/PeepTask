@@ -32,8 +32,7 @@
         <activity android:name=".mapActivities.MapActivity" />
         <activity
             android:name=".SnapShotActivity"
-            android:label="@string/title_activity_snap_shot"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:label="@string/title_activity_snap_shot"></activity>
     </application>
 
 </manifest>

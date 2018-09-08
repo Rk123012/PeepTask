@@ -9,6 +9,7 @@ public class CameraLocation {
     double lng;
     boolean selection;
     int groupId;
+    int camId;
 
     public CameraLocation() {
     }
@@ -28,13 +29,14 @@ public class CameraLocation {
 
     }
 
-    public CameraLocation(String title, String cameraNo, double lat, double lng, boolean selection,int groupId) {
+    public CameraLocation(String title, String cameraNo, double lat, double lng, boolean selection,int groupId,int camId) {
         this.title = title;
         this.cameraNo = cameraNo;
         this.lat = lat;
         this.lng = lng;
         this.selection = selection;
         this.groupId=groupId;
+        this.camId=camId;
 
     }
 
@@ -89,5 +91,13 @@ public class CameraLocation {
 
     public void setGroupId(int groupId) {
         this.groupId = groupId;
+    }
+
+    public int getCamId() {
+        return camId;
+    }
+
+    public void setCamId(int camId) {
+        this.camId = camId;
     }
 }

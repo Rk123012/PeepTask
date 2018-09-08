@@ -30,6 +30,17 @@
 
     </LinearLayout>
 
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageView"/>
+    <GridView
+        android:id="@+id/usage_example_gridview1"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:numColumns="2"/>
+
     <Button
         android:id="@+id/backHome"
         android:layout_width="194dp"

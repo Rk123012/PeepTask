@@ -1,5 +1,12 @@
 <resources>
-    <string name="app_name">GoogleMaps</string>
+    <string name="app_name">Peep</string>
     <string name="google_map_api_key">AIzaSyA-eRrG2Gwfq3IKuwJ-VmiXnUqNpBu4hFc</string>
     <string name="title_activity_snap_shot">SnapShotActivity</string>
+    <string-array name="query_suggestions">
+        <item>Furniture</item>
+        <item>Women Fashion</item>
+        <item>Hotels</item>
+        <item>Man Fashion</item>
+        <item>Electronics Appliances</item>
+    </string-array>
 </resources>

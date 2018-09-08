@@ -1,9 +1,9 @@
 package com.example.mohsiul.peep.mapActivities;
 
 import android.Manifest;
-import android.content.ClipData;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -13,19 +13,24 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.Toolbar;
 
+import com.arlib.floatingsearchview.FloatingSearchView;
 import com.example.mohsiul.peep.CameraInfo.AutoCompleteCameraAdapter;
 import com.example.mohsiul.peep.CameraInfo.CameraLocation;
 import com.example.mohsiul.peep.CameraInfo.CameraLocationData;
@@ -54,14 +59,23 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.lapism.searchview.Search;
+import com.lapism.searchview.database.SearchHistoryTable;
+import com.lapism.searchview.widget.SearchAdapter;
+import com.lapism.searchview.widget.SearchItem;
+import com.lapism.searchview.widget.SearchView;
+import com.miguelcatalan.materialsearchview.MaterialSearchView;
+
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import static android.widget.Toast.LENGTH_LONG;
+import static com.example.mohsiul.peep.CameraInfo.CameraLocationData.*;
 
-public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleApiClient.OnConnectionFailedListener,GoogleMap.OnMarkerClickListener{
+public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleApiClient.OnConnectionFailedListener,GoogleMap.OnMarkerClickListener, View.OnClickListener {
 
 
     @Override
@@ -104,10 +118,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     private GoogleMap mMap;
     private FusedLocationProviderClient mFusedLocationProviderClient;
-    public static final float DEFAULT_ZOOM=15f;
+    public static final float DEFAULT_ZOOM=20f;
 
    AutoCompleteTextView mSearchText;
-    //private SearchView mserachText;
+
     ImageView mGps,mPlacePicker;
 
     private PlaceAutocompleteAdapter mPlaceAutocompleteAdapter;
@@ -115,8 +129,14 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private GeoDataClient mGeoDataClient;
     private  GoogleApiClient mGoogleApiClient;
 
-    private Button btnMarker,btnMirpur;
+    private Button btnMarker,btnMirpur,btnGazipur,btnSylhet;
+    private RecyclerView.Adapter mAdapter;
+
+    int mirpurNo,gazipurNo, sylhetNo,clickCount=0,clickCount2=0,clickCount3=0;
     List<String> markersId = new ArrayList<String>();
+
+    private List<Marker> markers = new ArrayList<Marker>();
+    private HashMap<Marker, Integer> markerIdMapping = new HashMap<>();
 
 
 
@@ -126,19 +146,24 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
+
         mSearchText=(AutoCompleteTextView) findViewById(R.id.input1);
         mGps=(ImageView)findViewById(R.id.ic_gps);
         mPlacePicker=(ImageView)findViewById(R.id.place_picker);
         //SearchView searchView = findViewById(R.id.searchView);
         btnMirpur=findViewById(R.id.btnMirpur);
+        btnGazipur=findViewById(R.id.btnGazipur);
+        btnSylhet=findViewById(R.id.btnSylhet);
+       // searchView=findViewById(R.id.searchView);
+
+
+
+
 
 
 
 
         getLocationPermission();
-
-        //init();
-
 
         btnMarker=findViewById(R.id.btnMarker);
         //btnMarker.setText(markersId.size());
@@ -155,7 +180,39 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
             }
         });
-    
+
+        for (int i=0;i<CameraLocationData.getCameraLocation().size();i++)
+        {
+            if (CameraLocationData.getCameraLocation().get(i).getGroupId()==1)
+            {
+                mirpurNo++;
+            }
+            else if (CameraLocationData.getCameraLocation().get(i).getGroupId()==2)
+            {
+                gazipurNo++;
+
+            }
+            else if(CameraLocationData.getCameraLocation().get(i).getGroupId()==3)
+            {
+                sylhetNo++;
+            }
+
+
+        }
+        btnMirpur.setBackgroundColor(Color.WHITE);
+        btnGazipur.setBackgroundColor(Color.WHITE);
+        btnSylhet.setBackgroundColor(Color.WHITE);
+        btnMirpur.setText("Mirpur  "+mirpurNo);
+        btnSylhet.setText("Sylhet  "+sylhetNo);
+        btnGazipur.setText("Gazipur  "+gazipurNo);
+
+        btnMirpur.setOnClickListener(this);
+        btnGazipur.setOnClickListener(this);
+        btnSylhet.setOnClickListener(this);
+
+
+
+
 
 
 
@@ -169,12 +226,16 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     public  void setCameraLocationMarker(){
         mMap.setOnMarkerClickListener(this);
 
-        for (int i = 0; i< CameraLocationData.getCameraLocation().size(); i++){
+        for (int i = 0; i< getCameraLocation().size(); i++){
             Marker marker = mMap.addMarker(new MarkerOptions()
-                    .position(CameraLocationData.getCameraLocation().get(i).getLatLng())
-                    .title(CameraLocationData.getCameraLocation().get(i).getTitle()).icon(BitmapDescriptorFactory.fromResource(R.drawable.camera_marker)));
+                    .position(getCameraLocation().get(i).getLatLng())
+                    .title(String.valueOf(getCameraLocation().get(i).getCamId())).icon(BitmapDescriptorFactory.fromResource(R.drawable.camera_marker)));
+        //    markerIdMapping.put(marker,getCameraLocation().get(i).getCamId());
             marker.setTag(0);
+            markers.add(marker);
+
         }
+
 
     }
 
@@ -183,6 +244,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     {
 
         setCameraLocationMarker();
+
         Log.d(TAG, "searching");
         mGoogleApiClient = new GoogleApiClient
                 .Builder(this)
@@ -195,12 +257,19 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 LAT_LNG_BOUNDS, null);
 
 
-        ArrayList<CameraLocation> cameraInfos=new ArrayList<CameraLocation>();
+        final ArrayList<CameraLocationData> cameraInfos= new ArrayList<>();
 
 
-        final AutoCompleteCameraAdapter completeCameraAdapter = new AutoCompleteCameraAdapter(this, CameraLocationData.getCameraLocation());
+
+
+
+        AutoCompleteCameraAdapter completeCameraAdapter = new AutoCompleteCameraAdapter(getApplicationContext(), getCameraLocation());
 
         mSearchText.setAdapter(completeCameraAdapter);
+
+
+
+
 
 
 
@@ -213,8 +282,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 if(i== EditorInfo.IME_ACTION_SEARCH||i==EditorInfo.IME_ACTION_DONE||
                         keyEvent.getAction()==KeyEvent.ACTION_DOWN || keyEvent.getAction()==KeyEvent.KEYCODE_ENTER)
                 {
-                    geoLocate();
+                    //geoLocate();
+                    LatLng adapterAddress= CameraLocationData.getCameraLocation().get(i).getLatLng();
+                    //geoLocate();
 
+                    moveCamera(adapterAddress,DEFAULT_ZOOM,CameraLocationData.getCameraLocation().get(i).getTitle());
 
                 }
                 return false;
@@ -224,23 +296,14 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
-
-               // CameraLocation cameraLocation=new CameraLocation();
-
-                LatLng adapterAddress=CameraLocationData.getCameraLocation().get(i).getLatLng();
-
+               adapterView.getSelectedItem();
+                LatLng adapterAddress= getCameraLocation().get(i).getLatLng();
+                String newName = adapterView.getItemAtPosition(i).toString();
                 //geoLocate();
+              Toast.makeText(getApplicationContext(),""+newName,Toast.LENGTH_SHORT).show();
+
                 moveCamera(adapterAddress,DEFAULT_ZOOM,CameraLocationData.getCameraLocation().get(i).getTitle());
 
-
-
-              //  CameraLocationData.getCameraLocation().get(i);
-
-              ;
-
-
-
-//                Toast.makeText(getApplicationContext(),"i="+CameraLocationData.getCameraLocation().get(i).getTitle()+l,LENGTH_LONG).show();
             }
         });
 
@@ -306,6 +369,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         try{
 
             list=geocoder.getFromLocationName(searchString,1);
+
         }catch (IOException e)
         {
             Log.e(TAG,"No located"+e.getMessage());
@@ -435,7 +499,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
     @Override
-    public boolean onMarkerClick(Marker marker) {
+    public boolean onMarkerClick( Marker marker) {
+
 
         Integer clickCount = (Integer) marker.getTag();
 
@@ -464,12 +529,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.camera_marker));
             markersId.remove(marker.getTitle());
 
+
         }
-
-
-        // Return false to indicate that we have not consumed the event and that we wish
-        // for the default behavior to occur (which is for the camera to move such that the
-        // marker is centered and for the marker's info window to open, if it has one).
         return false;
     }
 
@@ -480,6 +541,81 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     {
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
     }
+
+
+    @Override
+    public void onClick(View view) {
+        if (view.getId() == R.id.btnMirpur) {
+            clickCount++;
+            for (Marker marker:markers)
+            {
+                if(marker.getTitle().equals("mirpur -1")){
+                    if (clickCount%2==1)
+                    {
+                        btnMirpur.setBackgroundColor(Color.RED);
+                        marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_map));
+                        markersId.add(marker.getTitle());
+                        marker.setTag(1);
+                    }
+                    else if(clickCount%2==0)
+                    {
+                        btnMirpur.setBackgroundColor(Color.WHITE);
+                        marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.camera_marker));
+                        markersId.remove(marker.getTitle());
+                        marker.setTag(0);
+                    }
+                }
+            }
+        }
+
+
+        if (view.getId() == R.id.btnGazipur) {
+            clickCount2++;
+            for (Marker marker:markers)
+            {
+                if(marker.getTitle().equals("gazipur")){
+                    if (clickCount2%2==1)
+                    {
+                        btnGazipur.setBackgroundColor(Color.RED);
+                        marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_map));
+                        markersId.add(marker.getTitle());
+                        marker.setTag(1);
+                    }
+                    else if(clickCount2%2==0)
+                    {
+                        btnGazipur.setBackgroundColor(Color.WHITE);
+                        marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.camera_marker));
+                        markersId.remove(marker.getTitle());
+                        marker.setTag(0);
+                    }
+                }
+            }
+        }
+        if (view.getId() == R.id.btnSylhet) {
+            clickCount3++;
+            for (Marker marker:markers)
+            {
+                if(marker.getTitle().equals("sylhet")){
+                    if (clickCount3%2==1)
+                    {
+                        btnSylhet.setBackgroundColor(Color.RED);
+                        marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_map));
+                        markersId.add(marker.getTitle());
+                        marker.setTag(1);
+                    }
+                    else if(clickCount3%2==0)
+                    {
+                        btnSylhet.setBackgroundColor(Color.WHITE);
+                        marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.camera_marker));
+                        markersId.remove(marker.getTitle());
+                        marker.setTag(0);
+                    }
+                }
+            }
+        }
+
+    }
+
 
 
 

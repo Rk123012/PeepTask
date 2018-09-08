@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
@@ -22,7 +22,7 @@
 
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="14dp"
+        android:layout_marginTop="15dp"
         android:background="#fff">
 
         <ImageView
@@ -31,17 +31,18 @@
             android:layout_height="match_parent"
 
 
-            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
             android:layout_alignParentTop="true"
-            android:layout_marginStart="13dp"
             android:src="@drawable/ic_magnify" />
+
 
         <AutoCompleteTextView
             android:id="@+id/input1"
-            android:layout_width="276dp"
+            android:layout_width="329dp"
             android:layout_height="match_parent"
             android:layout_alignParentEnd="true"
             android:layout_alignParentTop="true"
+
 
             android:background="@null"
             android:hint="Search Places"
@@ -50,9 +51,6 @@
             android:textColor="#000"
             android:textSize="15sp"
             android:textStyle="bold" />
-
-
-
 
 
     </RelativeLayout>
@@ -72,25 +70,26 @@
         android:id="@+id/place_picker"
         android:layout_width="40dp"
         android:layout_height="40dp"
+        android:layout_alignLeft="@+id/rellayout1"
         android:layout_alignParentTop="true"
+
+
         android:layout_alignStart="@+id/rellayout1"
-
-
         android:layout_marginTop="75dp"
         android:scaleType="centerCrop"
-        android:layout_alignLeft="@+id/rellayout1"
         android:src="@drawable/ic_map"
-  />
+        android:visibility="invisible" />
 
     <Button
         android:id="@+id/btnMirpur"
-        android:layout_width="77dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true"
         android:layout_marginBottom="77dp"
-        android:layout_marginStart="36dp"
-        android:background="@drawable/button_round"
+        android:layout_marginStart="25dp"
+
+
         android:text="Mirpur 3" />
 
     <Button
@@ -99,7 +98,7 @@
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/btnMirpur"
         android:layout_centerHorizontal="true"
-        android:background="@drawable/button_round"
+
         android:text="Gazipur 3" />
 
     <Button
@@ -108,8 +107,10 @@
         android:layout_height="wrap_content"
         android:layout_alignEnd="@+id/rellayout1"
         android:layout_alignTop="@+id/btnMirpur"
-        android:background="@drawable/button_round"
+
+
         android:text="Sylhet 3" />
+
 
     <Button
         android:id="@+id/btnMarker"
@@ -121,5 +122,10 @@
         android:background="@drawable/button_round"
         android:text="Snapshots"
         />
+
+
+
+
+
 
 </RelativeLayout>

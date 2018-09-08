@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -17,10 +18,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class AutoCompleteCameraAdapter extends ArrayAdapter<CameraLocation> {
+public class AutoCompleteCameraAdapter extends ArrayAdapter<CameraLocation> implements Filterable{
     private List<CameraLocation> countryListFull;
 
-    public AutoCompleteCameraAdapter(@NonNull Context context, @NonNull List<CameraLocation> countryList) {
+    public AutoCompleteCameraAdapter(@NonNull Context context, @NonNull ArrayList<CameraLocation> countryList) {
         super(context, 0, countryList);
         countryListFull = new ArrayList<CameraLocation>(countryList);
     }
@@ -30,6 +31,11 @@ public class AutoCompleteCameraAdapter extends ArrayAdapter<CameraLocation> {
     public Filter getFilter() {
         return countryFilter;
     }
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
 
     @NonNull
     @Override
@@ -49,7 +55,7 @@ public class AutoCompleteCameraAdapter extends ArrayAdapter<CameraLocation> {
             textViewName.setText(cameraItem.getTitle());
             cameraItem.getLatLng();
            // imageViewFlag.setImageResource(R.drawable.peep_logo);
-
+          //  cameraItem.groupId;
             textViewName_camera.setText(cameraItem.getCameraNo());
         }
 
